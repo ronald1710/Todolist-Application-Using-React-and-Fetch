@@ -4,22 +4,50 @@ import { useEffect } from "react";
 //create your first component
 const Home = () => {
   const [addTarea, setAddTarea] = useState([]);
-
+ 
   const getTareas = () => {
     fetch("https://assets.breatheco.de/apis/fake/todos/user/ronaldazofeifa")
       .then((resp) => resp.json())
-      .then((data) => console.log(data));
+      .then((resp) => setAddTarea(resp));
   };
   useEffect(() => {
     getTareas();
   }, []);
 
- function listaTareas(e) {
-    if (e.key === "Enter") {
-      setAddTarea([...addTarea, e.target.value]);
-      e.target.value = "";
-    }
-  }
+  let myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  let raw = JSON.stringify(addTarea);
+  let requestOptions = {
+    method: "PUT",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  fetch(
+    "https://assets.breatheco.de/apis/fake/todos/user/ronaldazofeifa",
+    requestOptions
+  )
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+
+
+
+
+
+
+  const listaTareas = e => {
+		
+		if (e.key === "Enter") {
+			 setAddTarea([
+				{ label: e.target.value , done: false },
+				...addTarea
+			]);
+		  console.log(addTarea);
+			e.target.value = "";
+		}
+	};
   console.log(addTarea);
 
   const removeTodo = (index) => {
@@ -30,7 +58,7 @@ const Home = () => {
 
   return (
     <div className="container">
-      <h1 className="text-center">Cosas por hacer</h1>
+      <h1 className="text-center"><b>Cosas por hacer</b></h1>
       <div className="mb-3">
         <input
           type="text"
@@ -42,24 +70,25 @@ const Home = () => {
       </div>
       <div id="lista">
         <div id="pendientes">
-          <ul>
-		  
-            {addTarea.map((tarea, index) => (
-              <li key={index}>
-                {tarea}
-				
-                <a className="float-end" onClick={() => removeTodo(index)}>
-                  <i className="bi bi-x bg-primary text-white"></i>
-                </a>
-              </li>
-            ))}
+          <ul className="list-group">
+            {addTarea.map((tarea, index) => {
+              return (
+                <li key={index}>
+                  {tarea.label}
+                  <a className="float-end" onClick={() => removeTodo(index)}>
+                    <i className="bi bi-x bg-primary text-white"></i>
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </div>
       <div className="text-center">
-        <p>Tareas pendientes: {addTarea.length} </p>
+        <p>
+          Tareas pendientes por hacer: <b>{addTarea.length} </b>
+        </p>
       </div>
-	  <div>{data}</div>
     </div>
   );
 };
