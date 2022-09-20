@@ -1,3 +1,4 @@
+import { element } from "prop-types";
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -36,14 +37,15 @@ const Home = () => {
     if (e.key === "Enter") {
       putTareas([{ label: e.target.value, done: false }, ...addTarea]);
       console.log(addTarea);
-      e.target.value = "";
+      //e.target.value = "";
     }
   };
-  console.log(addTarea);
+
 
   const removeTodo = (id) => {
     const newTodos = addTarea.filter((element, index) => index !== id);
     putTareas(newTodos);
+    
   }
 
  
