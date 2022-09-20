@@ -4,7 +4,7 @@ import { useEffect } from "react";
 //create your first component
 const Home = () => {
   const [addTarea, setAddTarea] = useState([]);
- 
+
   const getTareas = () => {
     fetch("https://assets.breatheco.de/apis/fake/todos/user/ronaldazofeifa")
       .then((resp) => resp.json())
@@ -14,51 +14,45 @@ const Home = () => {
     getTareas();
   }, []);
 
-  let myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  let raw = JSON.stringify(addTarea);
-  let requestOptions = {
-    method: "PUT",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
+  const putTareas = (todos) => {
+    fetch("https://assets.breatheco.de/apis/fake/todos/user/ronaldazofeifa", {
+      method: "PUT",
+      body: JSON.stringify(todos),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        console.log(data);
+        getTareas();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  fetch(
-    "https://assets.breatheco.de/apis/fake/todos/user/ronaldazofeifa",
-    requestOptions
-  )
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-
-
-
-
-
-
-  const listaTareas = e => {
-		
-		if (e.key === "Enter") {
-			 setAddTarea([
-				{ label: e.target.value , done: false },
-				...addTarea
-			]);
-		  console.log(addTarea);
-			e.target.value = "";
-		}
-	};
+  const listaTareas = (e) => {
+    if (e.key === "Enter") {
+      putTareas([{ label: e.target.value, done: false }, ...addTarea]);
+      console.log(addTarea);
+      e.target.value = "";
+    }
+  };
   console.log(addTarea);
 
-  const removeTodo = (index) => {
-    const newTodos = [...addTarea];
-    newTodos.splice(index, 1);
-    setAddTarea(newTodos);
-  };
+  const removeTodo = (id) => {
+    const newTodos = addTarea.filter((element, index) => index !== id);
+    putTareas(newTodos);
+  }
+
+ 
 
   return (
     <div className="container">
-      <h1 className="text-center"><b>Cosas por hacer</b></h1>
+      <h1 className="text-center">
+        <b>Cosas por hacer</b>
+      </h1>
       <div className="mb-3">
         <input
           type="text"
@@ -79,7 +73,7 @@ const Home = () => {
                     <i className="bi bi-x bg-primary text-white"></i>
                   </a>
                 </li>
-              )
+              );
             })}
           </ul>
         </div>
